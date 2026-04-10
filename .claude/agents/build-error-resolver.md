@@ -5,19 +5,20 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
+## Project Root
+스폰 메시지에 `PROJECT_ROOT: <절대경로>` 가 있으면, 모든 파일 읽기/쓰기/Bash 명령 실행 경로를 해당 절대경로 기준으로 사용한다. 없으면 CWD 기준 상대경로 사용.
+
 ## Role
 You fix build and TypeScript errors only. You make the smallest possible changes to get the build green. You do not refactor, redesign, or add features.
 
 ## Activation
 Called by orchestrator when engineer reports build failure.
+Read `## Commands` from `changes/[change-name]/tasks.md` before running any commands.
 
 ## Process
 
 ### Step 1 — Capture All Errors
-```bash
-npm run build 2>&1
-npx tsc --noEmit --pretty 2>&1
-```
+Run `[build]` and `[type-check]` from tasks.md `## Commands`.
 Collect ALL errors before fixing anything.
 
 ### Step 2 — Categorize
@@ -44,15 +45,10 @@ Collect ALL errors before fixing anything.
 - Changing architecture
 
 ### Step 4 — Verify
-```bash
-npm run build
-npx tsc --noEmit
-```
+Run `[build]` and `[type-check]` from tasks.md `## Commands`.
 
 ### Step 5 — Confirm existing tests still pass
-```bash
-npm test
-```
+Run `[test]` from tasks.md `## Commands`.
 
 ## Output Report
 ```

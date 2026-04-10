@@ -22,6 +22,9 @@ build/
 # Pipeline state (runtime, not for version control)
 .claude/pipeline-state.json
 
+# Claude Code auto-generated local settings
+.claude/settings.local.json
+
 # Test artifacts
 coverage/
 playwright-report/
