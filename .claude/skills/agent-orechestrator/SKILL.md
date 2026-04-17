@@ -1,5 +1,5 @@
 ---
-name: orchestrator
+name: agent-orechestrator
 description: 개발 요청에 대해 새 프로젝트 폴더를 생성하고 파이프라인을 직접 실행한다. 기능 추가, 버그 수정, 새 프로젝트 생성 요청 시 사용.
 argument-hint: [경로(선택)] [요청내용]
 allowed-tools: Bash Read Write Edit Agent
@@ -32,6 +32,7 @@ mkdir -p "$TARGET/.claude"
 
 if [ ! -d "$TARGET/.claude/agents" ]; then
   cp -r "$HARNESS/.claude/agents" "$TARGET/.claude/"
+  cp -r "$HARNESS/.claude/skills" "$TARGET/.claude/"
   cp "$HARNESS/CLAUDE.md" "$TARGET/CLAUDE.md"
 
   # DESIGN.md 복사 (존재하는 경우에만)
