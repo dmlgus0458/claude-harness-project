@@ -96,9 +96,11 @@ Inspect the codebase to detect the stack:
 ## SHARED OUTPUT STEPS (Both Minor and Major)
 
 ### Step A — Delta Detection
-Check `specs/` for related existing specs:
-- If a related spec is found → `extends: specs/[domain].md`
-- If not found → `extends: none`, canonical target = `new-spec: specs/[change-name].md`
+Check `docs/spec/mainspec/overview.md`:
+- If overview.md exists → `extends: docs/spec/mainspec/overview.md`
+- If not found → `extends: none`, canonical target = `new-spec: docs/spec/mainspec/overview.md`
+
+mainspec 디렉토리에 다른 파일(db-schema.md, api-contracts.md 등)이 있으면 함께 읽어 전체 맥락 파악.
 
 ### Step B — Create Directory
 Create `docs/spec/[change-name]/`.
@@ -113,13 +115,13 @@ Create `docs/spec/[change-name]/spec.md`:
 meta:
   type: Minor | Major
   date: YYYY-MM-DD
-  extends: specs/[domain].md | none
+  extends: docs/spec/mainspec/overview.md | none
 
 ## Summary
 One sentence describing what this change adds or modifies.
 
 ## Canonical Target
-- `specs/[domain].md` | `new-spec: specs/[change-name].md`
+- `docs/spec/mainspec/overview.md` | `new-spec: docs/spec/mainspec/overview.md`
 
 ## User Stories
 - As a [user], I want [action] so that [benefit]
@@ -206,9 +208,99 @@ Rules for tasks.md:
 - `## Stack` section must have all required fields
 - `## Commands` section must have all required commands
 
-### Step E — Verify Before Completing
+### Step E — Mainspec 생성/업데이트
+
+**경로**: `{PROJECT_ROOT}/docs/spec/mainspec/`
+
+#### 신규 프로젝트 (overview.md 없음)
+1. `docs/spec/mainspec/` 디렉토리 생성
+2. `docs/spec/mainspec/overview.md` 를 아래 포맷으로 작성
+   - spec.md 내용과 현재 코드베이스 분석을 바탕으로 전체 프로젝트 스펙 기술
+   - 추상적 선언이 아닌 실제 구현 내용(라우트, 컴포넌트명, API 경로 등) 포함
+3. 500줄 초과 시 → 아래 분리 규칙 적용
+
+#### 기존 프로젝트 (overview.md 있음)
+1. overview.md + mainspec 디렉토리 내 모든 파일 읽기
+2. 이번 delta(spec.md의 ADDED/MODIFIED/REMOVED)를 overview.md에 병합
+3. `## Revision History` 항목 추가: `- YYYY-MM-DD: [change-name] — [한 줄 요약]`
+4. 병합 후 500줄 초과 시 → 분리 규칙 적용
+
+#### 분리 규칙
+- **트리거**: overview.md 가 500줄 초과할 때만 적용
+- **도메인 기준 분리 절대 금지** (auth.md, blog.md, payment.md 등)
+- **분리 가능 항목** — 가장 큰 섹션부터 우선 추출:
+
+| 내용 유형 | 파일명 | 추출 기준 |
+|-----------|--------|----------|
+| DB / 데이터 스키마 정의 | `db-schema.md` | 해당 내용 100줄 이상 |
+| API 계약 상세 (full request/response) | `api-contracts.md` | 해당 내용 150줄 이상 |
+| 환경변수·배포 설정 상세 | `config.md` | 해당 내용 80줄 이상 |
+| 타입 정의 상세 | `types.md` | 해당 내용 100줄 이상 |
+
+- 분리 후 overview.md 해당 섹션 자리에 삽입:
+  ```
+  [1-2줄 요약 유지]
+  → 상세 내용: docs/spec/mainspec/db-schema.md
+  ```
+- overview.md는 항상 전체 아키텍처 맥락을 포함해야 한다. 참조로 대체된 섹션도 요약은 남긴다.
+
+#### overview.md 포맷
+
+```markdown
+# Mainspec: [project-name]
+
+meta:
+  created: YYYY-MM-DD
+  last_updated: YYYY-MM-DD
+  change_count: N
+
+## Project Overview
+[1-2문장 요약]
+
+## Stack
+| 항목 | 결정값 |
+|------|--------|
+
+## Architecture
+[렌더링 전략, 핵심 아키텍처 결정, 주요 패턴]
+
+## Pages & Routes
+| 경로 | 페이지/목적 | 관리 방식 |
+|------|------------|-----------|
+
+## Components
+[컴포넌트 맵 — 역할과 경계, 서버/클라이언트 구분]
+
+## API Contracts
+[엔드포인트 목록 + 핵심 request/response 형태]
+[150줄 이상이면 요약 2줄 + → 상세 내용: docs/spec/mainspec/api-contracts.md]
+
+## Data Models
+[주요 타입 정의 + DB 스키마 요약]
+[100줄 이상이면 요약 2줄 + → 상세 내용: docs/spec/mainspec/db-schema.md]
+
+## Environment & Config
+[필수 환경변수 목록]
+[80줄 이상이면 요약 + → 상세 내용: docs/spec/mainspec/config.md]
+
+## Non-Functional Requirements
+[성능, 보안, SEO 등]
+
+## Revision History
+- YYYY-MM-DD: [change-name] — [한 줄 요약]
+```
+
+#### 완료 검증
+- [ ] `docs/spec/mainspec/overview.md` 존재
+- [ ] overview.md `## Revision History` 에 이번 change-name 항목 있음
+- [ ] 분리 파일 생성 시 overview.md에 참조 링크 존재
+
+---
+
+### Step F — Verify Before Completing
 - [ ] `docs/spec/[change-name]/spec.md` exists
 - [ ] `docs/spec/[change-name]/tasks.md` exists
+- [ ] `docs/spec/mainspec/overview.md` exists
 - [ ] tasks.md `## Stack` section has all required fields
 - [ ] tasks.md `## Commands` section has all required commands
 - [ ] tasks.md has at least one implementation task, one test task, one E2E scenario
@@ -218,8 +310,10 @@ Rules for tasks.md:
 ```text
 [Spec]: [change-name] spec complete
 [Path]: docs/spec/[change-name]/
-[Delta]: Yes (extends: specs/[domain].md) | No (new spec)
+[Delta]: Yes (extends: docs/spec/mainspec/overview.md) | No (new spec)
 [Tasks]: N implementation, M test, K E2E
-[Canonical]: specs/[domain].md | new-spec: specs/[change-name].md
+[Canonical]: docs/spec/mainspec/overview.md | new-spec: docs/spec/mainspec/overview.md
+[Mainspec]: created | updated (overview.md [N]줄, 분리 파일: [없음 | db-schema.md 등])
+[Tokens]: ~X input / ~Y output
 [Next]: Engineer — read docs/spec/[change-name]/tasks.md
 ```

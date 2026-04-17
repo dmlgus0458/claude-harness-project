@@ -185,6 +185,7 @@ Fix: [specific fix]
 
 ## Overall Verdict
 APPROVE | WARNING | BLOCK
+[Tokens]: ~X input / ~Y output
 [Next]: E2E Runner | HALT (reason)
 ```
 

@@ -11,15 +11,16 @@ Handles requests: "build this page", "modify this feature", etc.
 - Vitest (unit/integration)
 - Playwright (E2E)
 
-Adjust per project. Stack decision recorded in `specs/config.md`.
+Adjust per project. Stack decision recorded in `docs/spec/mainspec/overview.md`.
 
 ## Workflow
 
 > **[Direct instruction to Claude]**
 > When receiving any request to implement code, modify files, or add features,
-> **NEVER implement directly**. Always call `Agent(orchestrator)` first.
-> Unless the user explicitly says "implement directly" or "skip the pipeline",
-> the first tool call for any implementation task MUST be `Agent(orchestrator)`.
+> **NEVER implement directly**.
+> All implementation MUST go through the `/orchestrator` skill.
+> If the user asks to build something without using the skill, respond:
+> "구현을 시작하려면 `/orchestrator [요청내용]` 으로 실행해주세요."
 
 ```
 Trivial  → gatekeeper → direct fix
@@ -30,13 +31,32 @@ Major    → gatekeeper → plan-spec → engineer → reviewer → e2e-runner
 Never skip reviewer or e2e-runner steps for Minor/Major changes.
 
 ## Delta Spec
-- Main specs live in `specs/[domain].md` (accumulated knowledge)
-- In-progress changes in `changes/[change-name]/`
-  - `spec.md` — delta spec (what this change adds/modifies)
+
+### Canonical Spec (mainspec)
+- 프로젝트 전체 구조 스펙은 `docs/spec/mainspec/` 에 보관한다
+- 진입점: `overview.md` (전체 아키텍처, 컴포넌트 맵, API 계약, 라우트, 스택)
+- **mainspec은 spec 에이전트가 spec.md + tasks.md 작성 직후 생성/업데이트한다**
+  - 신규 프로젝트: overview.md 신규 생성
+  - 기존 프로젝트: delta 내용을 overview.md에 병합 + Revision History 추가
+- **분리 규칙** (overview.md 500줄 초과 시만 적용):
+  - 도메인 기준 분리 절대 금지 (auth.md, blog.md 등)
+  - 내용 유형 기준으로만 분리: `db-schema.md` / `api-contracts.md` / `config.md` / `types.md`
+  - 분리 후 overview.md에 1-2줄 요약 + 참조 링크 유지
+- 추후 변경 시 AI는 `docs/spec/mainspec/` 디렉토리 전체를 읽어 프로젝트를 파악한다
+
+### Delta Spec (진행 중)
+- In-progress: `docs/spec/[change-name]/`
+  - `spec.md` — what this change adds/modifies
   - `tasks.md` — implementation checklist
-- Archived changes in `changes/archive/[change-name]/`
-- On archive: orchestrator moves folder + appends delta to `specs/[domain].md`
-- Trivial change logs in `trivial/YYYY-MM-DD-HH-MM-SS-[summary].md`
+
+### Archive
+- 완료된 delta: `docs/spec/archive/{classification}-YYYY-MM-DD-[change-name]/`
+  - prefix: `major-` / `minor-` (classification 기준)
+- archive 시 mainspec은 이미 spec 에이전트가 업데이트한 상태이므로 폴더 이동만 수행
+
+### Trivial
+- Trivial 변경 로그: `docs/trivial/YYYY-MM-DD-HH-MM-SS-[summary].md`
+- Trivial은 mainspec 업데이트 없이 로그만 기록
 
 ## Pipeline State
 - Active state tracked in `.claude/pipeline-state.json` (자동 생성)

@@ -77,7 +77,7 @@ Run `[e2e]` from tasks.md `## Commands`, scoped to `tests/e2e/[change-name]/`.
 
 ### Step 4 — Handle Failures
 For each failing test:
-1. Take screenshot: `await page.screenshot({ path: '.claude/tmp/e2e-fail-[name].png' })`
+1. Take screenshot: `await page.screenshot({ path: 'test-results/e2e-failures/[name].png' })`
 2. Capture trace if available
 3. Diagnose: is it a test bug or implementation bug?
 4. Fix test OR report implementation issue to orchestrator
@@ -99,6 +99,7 @@ Fix flaky tests before proceeding (use proper waits, isolate state).
 [Coverage]: N/N user stories covered
 [Artifacts]: [screenshot paths if any failures]
 [Status]: Pass | Fail
+[Tokens]: ~X input / ~Y output
 [Next]: Archive (orchestrator handles automatically)
 ```
 

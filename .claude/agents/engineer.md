@@ -113,6 +113,7 @@ If any criterion is unmet or any completed task remains unchecked, fix the artif
 [Build]: Pass | Fail
 [Modified Files]: [list]
 [Tasks File]: docs/spec/[change-name]/tasks.md (all checked)
+[Tokens]: ~X input / ~Y output
 [Next]: Reviewer
 ```
 
